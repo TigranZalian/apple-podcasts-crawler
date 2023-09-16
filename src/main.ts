@@ -19,6 +19,11 @@ const crawler = new CheerioCrawler({
   maxRequestsPerMinute: 1000,
 
   async requestHandler({ enqueueLinks, log, request, $ }) {
+    if (request.skipNavigation) {
+      log.debug(`Skipping ${request.url}`)
+      return
+    }
+    
     log.debug(`Processing ${request.url}`);
 
     if (!request.label || request.label === LABEL_PODCASTS_VIEW) {
@@ -35,16 +40,14 @@ const crawler = new CheerioCrawler({
         label: LABEL_PODCAST,
         limit: LIMIT,
         transformRequestFunction: (req) => {
-          if (processedRequestsTracker.isRequestProcessed(req.uniqueKey || req.url)) {
-            req.skipNavigation = true
-          }
+          req.skipNavigation = processedRequestsTracker.isRequestProcessed(req.uniqueKey || req.url)
           return req
         }
       })
       return
     }
 
-    if (request.label === LABEL_PODCAST && !request.skipNavigation) {
+    if (request.label === LABEL_PODCAST) {
       log.info(`Fetching podcast ${request.url}`)
 
       const podcastData = extractPodcastData($, request)
