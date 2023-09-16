@@ -1,5 +1,5 @@
 {
-  "name": "crawlee-test",
+  "name": "apple-podcasts-crawler",
   "private": true,
   "version": "1.0.0",
   "main": "dist/main.js",
